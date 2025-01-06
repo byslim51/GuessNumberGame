@@ -1,3 +1,4 @@
+import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -13,12 +14,26 @@ public class GuessNumber {
 
 
         System.out.println("Для начало игры вы должны выбрать сложность.");
-        Thread.sleep(3000);
+        Thread.sleep(1000);
         System.out.println("В игре есть 3 сложности: Легкая (загаданное число от 1 до 5), " +
                 "Средняя (загаданное число от 1 до 20) и Сложная (загаданное число от 1 до 100).");
-        Thread.sleep(3000);
+        Thread.sleep(1000);
         System.out.print("Выберите сложность (легкая = 1, средняя = 2, сложная = 3): ");
-        int difficult = scan.nextInt();
+        int difficult;
+        while (true) {
+            System.out.print("Выберите сложность (легкая = 1, средняя = 2, сложная = 3): ");
+            try {
+                difficult = scan.nextInt();
+                if (difficult >= 1 && difficult <= 3) {
+                    break;
+                } else {
+                    System.out.println("Ошибка: выберите число от 1 до 3.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Ошибка: введите только число от 1 до 3.");
+                scan.next();
+            }
+        }
 
         switch (difficult) {
             case 1:
@@ -39,25 +54,31 @@ public class GuessNumber {
 
         Thread.sleep(1000);
         System.out.print("Цифра загадана. Попробуйте угадать число: ");
-        playerVote = scan.nextInt();
+
 
         while (!playerGuessedRight) {
-
-            if (playerVote == hiddenNumber) {
-                System.out.println("Вы угадали число!");
-                playerGuessedRight = true;
-                gameEnd();
-            }
-
-            if (checkPlayerVoteToExceedingLimit(difficult, playerVote)) {
-                System.out.print("Вы превысили лимит загаданного числа. Выберите другое: ");
+            try {
                 playerVote = scan.nextInt();
-            }
 
-            if (playerVote != hiddenNumber) {
-                System.out.print("Вы не угадали число. Попытайтесь еще раз: ");
-                playerVote = scan.nextInt();
-                playerAttemptNumber++;
+                if (playerVote == hiddenNumber) {
+                    System.out.println("Вы угадали число!");
+                    playerGuessedRight = true;
+                    gameEnd();
+                }
+
+                if (checkPlayerVoteToExceedingLimit(difficult, playerVote)) {
+                    System.out.print("Вы превысили лимит загаданного числа. Выберите другое: ");
+                    playerVote = scan.nextInt();
+                }
+
+                if (playerVote != hiddenNumber) {
+                    System.out.print("Вы не угадали число. Попытайтесь еще раз: ");
+                    playerVote = scan.nextInt();
+                    playerAttemptNumber++;
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Ошибка: введите корректное число.");
+                scan.next();
             }
         }
     }
